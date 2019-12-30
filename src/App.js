@@ -8,21 +8,11 @@ import './Person/Person.css';
 class App extends Component {
   state = {
     persons: [
-      {name: 'Max', age: 28},
-      {name: 'Michael', age: 24},
-      {name: 'Jess', age: 18},
-    ]
-  }
-
-  switchNameHandler = (newName) => {
-    //console.log('Clicked')
-    this.setState( {
-      persons: [
-        {name: newName, age: 6000},
-        {name: 'Michael', age: 24},
-        {name: 'G.I.JOSE', age: 0},
-      ]
-    })
+      {id: '0', name: 'Max', age: 28},
+      {id: '1', name: 'Michael', age: 24},
+      {id: '2', name: 'Jess', age: 18},
+    ],
+    showPersons: false
   }
 
   nameChangedHandler = (event) => {
@@ -35,6 +25,18 @@ class App extends Component {
       ]
     })
   }
+
+  deletePersonHandler = (personIndex) => {
+    const persons = this.state.persons.slice();
+    persons.splice(personIndex, 1);
+    this.setState({persons: persons});
+  }
+
+  togglePersonsHandler = () => {
+    const doesShow = this.state.showPersons;
+    this.setState({showPersons: !doesShow});
+  }
+
 //bind is better option to use
   render() {
 
@@ -46,22 +48,29 @@ class App extends Component {
       cursor: 'pointer',
     };
 
+    let persons = null;
+
+    if (this.state.showPersons) {
+      persons = (
+        <div>
+          {this.state.persons.map((person, index) => {
+            return <Person 
+              click={() => this.deletePersonHandler(index)}
+              name={person.name} 
+              age={person.age}
+              key={person.id}
+              />
+          })}
+          </div>
+      );
+    }
+
     return (
       <div className="App">
         <h1>Hi, I'm a React app</h1>
         <p>This is really working!</p>
-        <button style={style} onClick={() => this.switchNameHandler('Maximus!!')}>Switch Name</button>
-        <Person
-         name={this.state.persons[0].name} 
-         age={this.state.persons[0].age} />
-        <Person
-         name={this.state.persons[1].name} 
-         age={this.state.persons[1].age}
-         click={this.switchNameHandler.bind(this, 'Max!')}
-         changed={this.nameChangedHandler} >Hobbies: Racing</Person>
-        <Person
-         name={this.state.persons[2].name} 
-         age={this.state.persons[2].age} />
+        <button style={style} onClick={this.togglePersonsHandler}>Show Persons</button>
+        {persons}
       </div>
     );
   }
